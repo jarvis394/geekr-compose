@@ -49,7 +49,7 @@ data class JsonLdAuthor(
 data class Article(
     val id: String,
     val author: Profile,
-    val commentsEnabled: Boolean? = null,
+    val commentsEnabled: CommentsEnabled? = null,
     val complexity: ArticleComplexity?,
     val format: ArticleFormat?,
     val editorVersion: String,
@@ -71,6 +71,12 @@ data class Article(
     val textHtml: String? = null,
     val translationData: TranslationData? = null,
     val leadImage: String? = null
+)
+
+@Serializable
+data class CommentsEnabled(
+    val status: Boolean,
+    val reason: String? = null
 )
 
 @Serializable

@@ -56,7 +56,7 @@ fun Image(
             Icon(
                 imageVector = Icons.Rounded.BrokenImage,
                 contentDescription = "Error loading image",
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

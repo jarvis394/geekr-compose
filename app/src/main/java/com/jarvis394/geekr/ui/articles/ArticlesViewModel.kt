@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-enum class ArticlesFilter(val mode: ArticlesModeParam, val label: String) {
-    DAILY(ArticlesPeriod.daily, "Daily"),
-    WEEKLY(ArticlesPeriod.weekly, "Weekly"),
-    MONTHLY(ArticlesPeriod.monthly, "Monthly"),
-    RECENT(ArticlesRating.all, "Recent")
+enum class ArticlesFilter(val mode: ArticlesModeParam, val label: String, val extendedLabel: String) {
+    DAILY(ArticlesPeriod.daily, "Daily", "Top daily articles"),
+    WEEKLY(ArticlesPeriod.weekly, "Weekly", "Top weekly articles"),
+    MONTHLY(ArticlesPeriod.monthly, "Monthly", "Top monthly articles"),
+    RECENT(ArticlesRating.all, "Recent", "Recent articles")
 }
 
 @HiltViewModel

@@ -18,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,14 +27,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.EntryProviderScope
+import com.jarvis394.geekr.data.model.Article
+import com.jarvis394.geekr.ui.MainAppScreenKey
+import com.jarvis394.geekr.ui.article.ArticleScreenKey
+import com.jarvis394.geekr.ui.composables.AppBar
 import com.jarvis394.geekr.ui.composables.ArticleItem.ArticleItem
 import com.jarvis394.geekr.ui.composables.ArticlesSwitcherRow
+import com.jarvis394.geekr.ui.composables.Navigator
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object ArticlesScreenKey : MainAppScreenKey
+
+fun EntryProviderScope<MainAppScreenKey>.articlesScreenEntry(navigator: Navigator<MainAppScreenKey>) {
+    entry<ArticlesScreenKey> { ArticlesScreen(navigator) }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArticlesScreen(viewModel: ArticlesViewModel = hiltViewModel()) {
+fun ArticlesScreen(
+    navigator: Navigator<MainAppScreenKey>,
+    viewModel: ArticlesViewModel = hiltViewModel(),
+) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val currentFilter by viewModel.currentFilter.collectAsStateWithLifecycle()
+    val hazeState = rememberHazeState()
 
     fun onFilterSelected(filter: ArticlesFilter) {
         viewModel.setFilter(filter)
@@ -45,12 +64,19 @@ fun ArticlesScreen(viewModel: ArticlesViewModel = hiltViewModel()) {
         viewModel.fetchArticles()
     }
 
+    fun onArticleItemClick(article: Article) {
+        navigator.navigateTo(ArticleScreenKey(article.id))
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("geekr.") })
+            AppBar(hazeState, currentFilter)
         }) { padding ->
         LazyColumn(
-            modifier = Modifier.consumeWindowInsets(padding), contentPadding = padding
+            modifier = Modifier
+                .consumeWindowInsets(padding)
+                .hazeSource(hazeState),
+            contentPadding = padding
         ) {
             item {
                 ArticlesSwitcherRow(
@@ -73,7 +99,11 @@ fun ArticlesScreen(viewModel: ArticlesViewModel = hiltViewModel()) {
 
                 is ArticlesUIState.Success -> {
                     items(state.articles, key = { it.id }) { article ->
-                        ArticleItem(article, modifier = Modifier.animateItem())
+                        ArticleItem(
+                            article,
+                            modifier = Modifier.animateItem(),
+                            onClick = { article -> onArticleItemClick(article) }
+                        )
                     }
                 }
 

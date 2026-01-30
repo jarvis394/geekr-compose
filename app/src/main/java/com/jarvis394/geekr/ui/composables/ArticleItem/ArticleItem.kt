@@ -1,6 +1,5 @@
 package com.jarvis394.geekr.ui.composables.ArticleItem
 
-import ArticleLabel
 import android.text.format.DateUtils
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -16,20 +15,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jarvis394.geekr.data.model.Article
-import com.jarvis394.geekr.data.model.ArticleComplexity
-import com.jarvis394.geekr.data.model.ArticleFormat
-import com.jarvis394.geekr.data.model.ArticleStatistics
-import com.jarvis394.geekr.data.model.LeadData
-import com.jarvis394.geekr.data.model.PostType
-import com.jarvis394.geekr.data.model.Profile
 import com.jarvis394.geekr.ui.composables.Image
 import java.time.OffsetDateTime
 
 @Composable
-fun ArticleItem(article: Article, modifier: Modifier = Modifier) {
+fun ArticleItem(
+    article: Article,
+    modifier: Modifier = Modifier,
+    onClick: ((article: Article) -> Unit)? = null
+) {
     fun formatRelative(isoString: String?): String {
         if (isoString.isNullOrEmpty()) return ""
         val timeMillis = OffsetDateTime.parse(isoString).toInstant().toEpochMilli()
@@ -43,7 +39,11 @@ fun ArticleItem(article: Article, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .clickable {},
+            .clickable {
+                if (onClick != null) {
+                    onClick(article)
+                }
+            },
     ) {
         Column {
             article.leadData?.imageUrl?.let { url ->
@@ -71,7 +71,7 @@ fun ArticleItem(article: Article, modifier: Modifier = Modifier) {
             }
 
             HorizontalDivider(
-                thickness = 0.5.dp, color = MaterialTheme.colorScheme.surfaceVariant
+                thickness = 0.5.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f)
             )
         }
     }
