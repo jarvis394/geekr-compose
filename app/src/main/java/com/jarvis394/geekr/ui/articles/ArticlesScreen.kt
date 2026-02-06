@@ -55,6 +55,7 @@ fun ArticlesScreen(
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val currentFilter by viewModel.currentFilter.collectAsStateWithLifecycle()
+    val profile by viewModel.userProfile.collectAsStateWithLifecycle(null)
     val hazeState = rememberHazeState()
 
     fun onFilterSelected(filter: ArticlesFilter) {
@@ -75,7 +76,11 @@ fun ArticlesScreen(
 
     Scaffold(
         topBar = {
-            AppBar(hazeState, currentFilter, onAvatarClick = { onAvatarClick() })
+            AppBar(
+                hazeState,
+                currentFilter,
+                profile = profile,
+                onAvatarClick = { onAvatarClick() })
         }) { padding ->
         LazyColumn(
             modifier = Modifier

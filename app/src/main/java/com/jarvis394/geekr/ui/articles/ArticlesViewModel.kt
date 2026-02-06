@@ -7,14 +7,21 @@ import com.jarvis394.geekr.data.model.ArticlesModeParam
 import com.jarvis394.geekr.data.model.ArticlesPeriod
 import com.jarvis394.geekr.data.model.ArticlesRating
 import com.jarvis394.geekr.data.repository.ArticlesRepository
+import com.jarvis394.geekr.ui.profile.UserProfile
+import com.jarvis394.geekr.ui.profile.UserProfileDao
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-enum class ArticlesFilter(val mode: ArticlesModeParam, val label: String, val extendedLabel: String) {
+enum class ArticlesFilter(
+    val mode: ArticlesModeParam,
+    val label: String,
+    val extendedLabel: String
+) {
     DAILY(ArticlesPeriod.daily, "Daily", "Top daily articles"),
     WEEKLY(ArticlesPeriod.weekly, "Weekly", "Top weekly articles"),
     MONTHLY(ArticlesPeriod.monthly, "Monthly", "Top monthly articles"),
@@ -22,10 +29,15 @@ enum class ArticlesFilter(val mode: ArticlesModeParam, val label: String, val ex
 }
 
 @HiltViewModel
-class ArticlesViewModel @Inject constructor(private val repository: ArticlesRepository) :
+class ArticlesViewModel @Inject constructor(
+    private val repository: ArticlesRepository,
+    userProfileDao: UserProfileDao
+) :
     ViewModel() {
     private val _state = MutableStateFlow<ArticlesUIState>(ArticlesUIState.Loading)
     val state: StateFlow<ArticlesUIState> = _state
+
+    val userProfile: Flow<UserProfile?> = userProfileDao.getUserProfile()
 
     private val _currentFilter = MutableStateFlow(ArticlesFilter.DAILY)
     val currentFilter: StateFlow<ArticlesFilter> = _currentFilter.asStateFlow()
