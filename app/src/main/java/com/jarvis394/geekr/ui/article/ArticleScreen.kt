@@ -54,7 +54,7 @@ fun ArticleScreen(
     val state = viewModel.uiState
     val scrollState = rememberScrollState()
     val topBarTitle = when (state) {
-        is ArticleUiState.Success -> state.article.titleHtml
+        is ArticleUIState.Success -> state.article.titleHtml
         else -> ""
     }
 
@@ -84,13 +84,13 @@ fun ArticleScreen(
                 .verticalScroll(scrollState)
         ) {
             when (state) {
-                is ArticleUiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                is ArticleUiState.Error -> Text(
+                is ArticleUIState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
+                is ArticleUIState.Error -> Text(
                     "Error: ${state.message}",
                     color = MaterialTheme.colorScheme.error
                 )
 
-                is ArticleUiState.Success -> {
+                is ArticleUIState.Success -> {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = state.article.titleHtml,

@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jarvis394.geekr.data.model.Article
 import com.jarvis394.geekr.data.repository.ArticleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -24,7 +23,7 @@ class ArticleViewModel @AssistedInject constructor(
         fun create(articleId: String): ArticleViewModel
     }
 
-    var uiState by mutableStateOf<ArticleUiState>(ArticleUiState.Loading)
+    var uiState by mutableStateOf<ArticleUIState>(ArticleUIState.Loading)
         private set
 
     init {
@@ -35,16 +34,10 @@ class ArticleViewModel @AssistedInject constructor(
         viewModelScope.launch {
             try {
                 val article = repository.getArticle(articleId)
-                uiState = ArticleUiState.Success(article)
+                uiState = ArticleUIState.Success(article)
             } catch (e: Exception) {
-                uiState = ArticleUiState.Error(e.message ?: "Unknown error")
+                uiState = ArticleUIState.Error(e.message ?: "Unknown error")
             }
         }
     }
-}
-
-sealed interface ArticleUiState {
-    object Loading : ArticleUiState
-    data class Success(val article: Article) : ArticleUiState
-    data class Error(val message: String) : ArticleUiState
 }

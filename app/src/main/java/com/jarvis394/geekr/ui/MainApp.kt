@@ -13,6 +13,7 @@ import com.jarvis394.geekr.ui.article.articleScreenEntry
 import com.jarvis394.geekr.ui.articles.ArticlesScreenKey
 import com.jarvis394.geekr.ui.articles.articlesScreenEntry
 import com.jarvis394.geekr.ui.composables.ScreenNavigator
+import com.jarvis394.geekr.ui.profile.profileScreenEntry
 import com.jarvis394.geekr.utils.sharedAxisXPopTransitionSpec
 import com.jarvis394.geekr.utils.sharedAxisXTransitionSpec
 
@@ -33,5 +34,6 @@ fun MainApp() {
         entryProvider = entryProvider {
             articlesScreenEntry(navigator)
             articleScreenEntry(navigator)
+            profileScreenEntry(navigator)
         })
 }

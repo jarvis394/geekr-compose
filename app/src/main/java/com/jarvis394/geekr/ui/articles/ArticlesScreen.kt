@@ -35,6 +35,7 @@ import com.jarvis394.geekr.ui.composables.AppBar
 import com.jarvis394.geekr.ui.composables.ArticleItem.ArticleItem
 import com.jarvis394.geekr.ui.composables.ArticlesSwitcherRow
 import com.jarvis394.geekr.ui.composables.Navigator
+import com.jarvis394.geekr.ui.profile.ProfileScreenKey
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.serialization.Serializable
@@ -68,9 +69,13 @@ fun ArticlesScreen(
         navigator.navigateTo(ArticleScreenKey(article.id))
     }
 
+    fun onAvatarClick() {
+        navigator.navigateTo(ProfileScreenKey)
+    }
+
     Scaffold(
         topBar = {
-            AppBar(hazeState, currentFilter)
+            AppBar(hazeState, currentFilter, onAvatarClick = { onAvatarClick() })
         }) { padding ->
         LazyColumn(
             modifier = Modifier
