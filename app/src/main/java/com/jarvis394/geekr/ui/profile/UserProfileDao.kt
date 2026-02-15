@@ -12,4 +12,7 @@ interface UserProfileDao {
 
     @Upsert
     suspend fun upsert(user: UserProfile)
+
+    @Query("DELETE FROM users WHERE id = 1")
+    suspend fun delete()
 }

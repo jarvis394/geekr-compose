@@ -1,5 +1,14 @@
 package com.jarvis394.geekr.ui.articles
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +29,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,7 +48,7 @@ import com.jarvis394.geekr.ui.composables.AppBar
 import com.jarvis394.geekr.ui.composables.ArticleItem.ArticleItem
 import com.jarvis394.geekr.ui.composables.ArticlesSwitcherRow
 import com.jarvis394.geekr.ui.composables.Navigator
-import com.jarvis394.geekr.ui.profile.ProfileScreenKey
+import com.jarvis394.geekr.ui.composables.UserProfileDialog
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.serialization.Serializable
@@ -47,12 +60,13 @@ fun EntryProviderScope<MainAppScreenKey>.articlesScreenEntry(navigator: Navigato
     entry<ArticlesScreenKey> { ArticlesScreen(navigator) }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun ArticlesScreen(
     navigator: Navigator<MainAppScreenKey>,
     viewModel: ArticlesViewModel = hiltViewModel(),
 ) {
+    var isProfileDialogOpen by remember { mutableStateOf(false) }
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val currentFilter by viewModel.currentFilter.collectAsStateWithLifecycle()
     val profile by viewModel.userProfile.collectAsStateWithLifecycle(null)
@@ -71,65 +85,94 @@ fun ArticlesScreen(
     }
 
     fun onAvatarClick() {
-        navigator.navigateTo(ProfileScreenKey)
+        isProfileDialogOpen = true
     }
 
-    Scaffold(
-        topBar = {
-            AppBar(
-                hazeState,
-                currentFilter,
-                profile = profile,
-                onAvatarClick = { onAvatarClick() })
-        }) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .consumeWindowInsets(padding)
-                .hazeSource(hazeState),
-            contentPadding = padding
-        ) {
-            item {
-                ArticlesSwitcherRow(
-                    selectedFilter = currentFilter, onFilterSelected = { filter ->
-                        onFilterSelected(filter)
-                    })
+    fun handleDialogClose() {
+        isProfileDialogOpen = false
+    }
+
+    SharedTransitionLayout {
+        Scaffold(
+            topBar = {
+                AppBar(
+                    hazeState,
+                    currentFilter,
+                    profile = profile,
+                    isProfileDialogOpen = isProfileDialogOpen,
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    onAvatarClick = { onAvatarClick() })
+            }) { padding ->
+            LazyColumn(
+                modifier = Modifier
+                    .consumeWindowInsets(padding)
+                    .hazeSource(hazeState),
+                contentPadding = padding
+            ) {
+                item {
+                    ArticlesSwitcherRow(
+                        selectedFilter = currentFilter, onFilterSelected = { filter ->
+                            onFilterSelected(filter)
+                        })
+                }
+
+                when (val state = uiState) {
+                    is ArticlesUIState.Loading -> {
+                        item(key = "loading") {
+                            ArticlesLoadingView(
+                                modifier = Modifier
+                                    .fillParentMaxHeight(0.8f)
+                                    .fillMaxWidth()
+                                    .animateItem()
+                            )
+                        }
+                    }
+
+                    is ArticlesUIState.Success -> {
+                        items(state.articles, key = { it.id }) { article ->
+                            ArticleItem(
+                                article,
+                                modifier = Modifier.animateItem(),
+                                onClick = { article -> onArticleItemClick(article) })
+                        }
+                    }
+
+                    is ArticlesUIState.Error -> {
+                        item {
+                            ArticlesErrorView(
+                                message = state.message,
+                                onRetry = { onRetry() },
+                                modifier = Modifier.animateItem()
+                            )
+                        }
+                    }
+
+                    is ArticlesUIState.Empty -> {
+                        item { ArticlesEmptyView(modifier = Modifier.animateItem()) }
+                    }
+                }
             }
+        }
 
-            when (val state = uiState) {
-                is ArticlesUIState.Loading -> {
-                    item(key = "loading") {
-                        ArticlesLoadingView(
-                            modifier = Modifier
-                                .fillParentMaxHeight(0.8f)
-                                .fillMaxWidth()
-                                .animateItem()
-                        )
-                    }
-                }
-
-                is ArticlesUIState.Success -> {
-                    items(state.articles, key = { it.id }) { article ->
-                        ArticleItem(
-                            article,
-                            modifier = Modifier.animateItem(),
-                            onClick = { article -> onArticleItemClick(article) }
-                        )
-                    }
-                }
-
-                is ArticlesUIState.Error -> {
-                    item {
-                        ArticlesErrorView(
-                            message = state.message,
-                            onRetry = { onRetry() },
-                            modifier = Modifier.animateItem()
-                        )
-                    }
-                }
-
-                is ArticlesUIState.Empty -> {
-                    item { ArticlesEmptyView(modifier = Modifier.animateItem()) }
-                }
+        AnimatedVisibility(
+            visible = isProfileDialogOpen, enter = fadeIn(tween(300)), exit = fadeOut(tween(300))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { isProfileDialogOpen = false }, contentAlignment = Alignment.Center
+            ) {
+                UserProfileDialog(
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this@AnimatedVisibility,
+                    profile = profile,
+                    navigator = navigator,
+                    onClose = { handleDialogClose() }
+                )
             }
         }
     }

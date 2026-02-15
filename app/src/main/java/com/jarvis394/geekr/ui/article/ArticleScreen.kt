@@ -3,6 +3,7 @@ package com.jarvis394.geekr.ui.article
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -80,8 +81,9 @@ fun ArticleScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(scrollState)
+                .consumeWindowInsets(padding)
+                .padding(top = padding.calculateTopPadding())
+                .verticalScroll(scrollState),
         ) {
             when (state) {
                 is ArticleUIState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -96,7 +98,7 @@ fun ArticleScreen(
                             text = state.article.titleHtml,
                             style = MaterialTheme.typography.headlineMedium
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                         state.article.textHtml?.let { HtmlText(html = it) }
                     }
                 }

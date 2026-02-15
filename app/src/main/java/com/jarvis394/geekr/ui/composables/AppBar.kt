@@ -1,5 +1,11 @@
 package com.jarvis394.geekr.ui.composables
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,19 +35,64 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.innerShadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jarvis394.geekr.ui.articles.ArticlesFilter
 import com.jarvis394.geekr.ui.profile.UserProfile
+import com.jarvis394.geekr.utils.fadingScrim
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
+
+
+val appBarShape = RoundedCornerShape(24.dp)
+
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun SharedTransitionScope.AvatarTrigger(
+    profile: UserProfile? = null, isProfileDialogOpen: Boolean = false, onOpen: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .clickable { onOpen() }
+    ) {
+        AnimatedVisibility(
+            visible = !isProfileDialogOpen,
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                Image(
+                    model = profile?.avatarUrl, modifier = Modifier
+                        .sharedBounds(
+                            rememberSharedContentState(key = "avatar_bounds"),
+                            animatedVisibilityScope = this@AnimatedVisibility
+                        )
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f),
+                            appBarShape
+                        )
+                        .animateEnterExit(
+                            enter = fadeIn(tween(400, 100)), exit = fadeOut(tween(100))
+                        )
+                )
+            }
+        }
+    }
+}
 
 
 @OptIn(ExperimentalHazeMaterialsApi::class, ExperimentalMaterial3Api::class)
@@ -48,27 +100,23 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 fun AppBar(
     hazeState: HazeState,
     currentFilter: ArticlesFilter,
+    isProfileDialogOpen: Boolean = false,
+    sharedTransitionScope: SharedTransitionScope,
     onAvatarClick: () -> Unit,
     profile: UserProfile? = null
 ) {
-    val bgColor = MaterialTheme.colorScheme.background
-    val appBarShape = RoundedCornerShape(24.dp)
+    val bgColor = MaterialTheme.colorScheme.background.copy(0.9f)
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .drawBehind {
-                drawRect(
-                    brush = Brush.verticalGradient(
-                        0f to bgColor, 1f to Color.Transparent
-                    )
-                )
-            }
-            .statusBarsPadding()) {
+            .fadingScrim(bgColor)
+            .statusBarsPadding()
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 2.dp)
+                .padding(horizontal = 12.dp, vertical = 2.dp)
                 .height(52.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -140,17 +188,14 @@ fun AppBar(
                 }
             }
 
-            Image(
-                model = profile?.avatarUrl,
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .clickable(onClick = onAvatarClick)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .border(
-                        1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f), appBarShape
-                    )
-            )
+
+            with(sharedTransitionScope) {
+                AvatarTrigger(
+                    onOpen = onAvatarClick,
+                    profile = profile,
+                    isProfileDialogOpen = isProfileDialogOpen
+                )
+            }
         }
     }
 }
