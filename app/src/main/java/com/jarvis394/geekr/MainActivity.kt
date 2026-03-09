@@ -33,7 +33,8 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-                    MainApp()
+                    val articleIdFromIntent = intent.getLongExtra("article_id", -1L).takeIf { it != -1L }
+                    MainApp(initialArticleId = articleIdFromIntent)
                     Box(modifier = Modifier.align(Alignment.BottomCenter)) {
                         InsetBottom()
                     }

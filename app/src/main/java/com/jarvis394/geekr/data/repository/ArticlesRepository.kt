@@ -47,4 +47,8 @@ class ArticlesRepository @Inject constructor(
             }
         }
     }
+
+    fun addArticle(article: Article) {
+
+    }
 }

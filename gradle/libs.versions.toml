@@ -25,6 +25,11 @@ navigation3Ui = "1.0.0"
 roomRuntime = "2.8.4"
 roomKtx = "2.8.4"
 roomCompiler = "2.8.4"
+richeditorCompose = "1.0.0-rc13"
+jsoup = "1.21.1"
+coilComposeVersion = "3.2.0"
+coilNetworkOkhttp = "3.2.0"
+nativeHtml = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.17.0" }
@@ -64,6 +69,11 @@ androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
+richeditor-compose = { group = "com.mohamedrejeb.richeditor", name = "richeditor-compose", version.ref = "richeditorCompose" }
+jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
+coil3-coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version = "3.4.0" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version = "3.4.0" }
+native-html = { group = "io.github.malikshairali", name = "native-html", version.ref = "nativeHtml" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

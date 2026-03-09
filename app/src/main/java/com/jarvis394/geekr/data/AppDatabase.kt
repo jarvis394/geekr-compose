@@ -6,6 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.jarvis394.geekr.ui.profile.UserProfile
 import com.jarvis394.geekr.ui.profile.UserProfileDao
+import com.jarvis394.geekr.data.model.PersonalArticle
+import com.jarvis394.geekr.data.dao.PersonalArticlesDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,9 +15,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Database(entities = [UserProfile::class], version = 2, exportSchema = false)
+@Database(entities = [UserProfile::class, PersonalArticle::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
+    abstract fun personalArticlesDao(): PersonalArticlesDao
 }
 
 @Module
@@ -32,5 +35,10 @@ object DatabaseModule {
     @Provides
     fun provideUserProfileDao(database: AppDatabase): UserProfileDao {
         return database.userProfileDao()
+    }
+
+    @Provides
+    fun providePersonalArticlesDao(database: AppDatabase): PersonalArticlesDao {
+        return database.personalArticlesDao()
     }
 }

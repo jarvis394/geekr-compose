@@ -10,6 +10,8 @@ abstract class Navigator<T : NavKey>(val backStack: NavBackStack<T>) {
 
     abstract fun navigateTo(key: T)
 
+    abstract fun replace(key: T)
+
     fun navigateBack() {
         backStack.removeLastCompat()
     }
@@ -17,6 +19,13 @@ abstract class Navigator<T : NavKey>(val backStack: NavBackStack<T>) {
 
 class ScreenNavigator<T : NavKey>(backStack: NavBackStack<T>) : Navigator<T>(backStack) {
     override fun navigateTo(key: T) {
+        backStack.add(key)
+    }
+
+    override fun replace(key: T) {
+        if (backStack.size > 0) {
+            backStack.removeLastCompat()
+        }
         backStack.add(key)
     }
 }
@@ -31,5 +40,12 @@ class PaneNavigator<T : NavKey>(backStack: NavBackStack<T>) : Navigator<T>(backS
                 backStack.add(key)
             }
         }
+    }
+
+    override fun replace(key: T) {
+        if (backStack.size > 1) {
+            backStack.removeLastCompat()
+        }
+        navigateTo(key)
     }
 }

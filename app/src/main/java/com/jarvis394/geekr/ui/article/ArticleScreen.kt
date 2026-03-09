@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -93,13 +94,19 @@ fun ArticleScreen(
                 )
 
                 is ArticleUIState.Success -> {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = state.article.titleHtml,
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        state.article.textHtml?.let { HtmlText(html = it) }
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = state.article.titleHtml,
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                        }
+                        state.article.textHtml?.let {
+                            HtmlText(
+                                html = it,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }

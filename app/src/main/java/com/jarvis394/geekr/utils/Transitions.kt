@@ -35,7 +35,7 @@ fun sharedAxisXTransitionSpec(): ContentTransform =
     ContentTransform(
         slideInHorizontally(
             animationSpec = tween(durationMillis = Durations.Long1, easing = Easings.Emphasized),
-            initialOffsetX = { (0.1f * it).roundToInt() },
+            initialOffsetX = { (0.2f * it).roundToInt() },
         ) +
                 fadeIn(
                     animationSpec =
@@ -47,7 +47,7 @@ fun sharedAxisXTransitionSpec(): ContentTransform =
                 ),
         slideOutHorizontally(
             animationSpec = tween(durationMillis = Durations.Long1, easing = Easings.Emphasized),
-            targetOffsetX = { (-0.1f * it).roundToInt() },
+            targetOffsetX = { (-0.2f * it).roundToInt() },
         ) +
                 fadeOut(
                     animationSpec =
@@ -62,7 +62,7 @@ fun sharedAxisXPopTransitionSpec(): ContentTransform =
     ContentTransform(
         slideInHorizontally(
             animationSpec = tween(durationMillis = Durations.Long1, easing = Easings.Emphasized),
-            initialOffsetX = { (-0.1f * it).roundToInt() },
+            initialOffsetX = { (-0.2f * it).roundToInt() },
         ) +
                 fadeIn(
                     animationSpec =
@@ -74,7 +74,7 @@ fun sharedAxisXPopTransitionSpec(): ContentTransform =
                 ),
         slideOutHorizontally(
             animationSpec = tween(durationMillis = Durations.Long1, easing = Easings.Emphasized),
-            targetOffsetX = { (0.1f * it).roundToInt() },
+            targetOffsetX = { (0.2f * it).roundToInt() },
         ) +
                 fadeOut(
                     animationSpec =

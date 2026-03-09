@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -34,9 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.jarvis394.geekr.ui.MainAppScreenKey
+import com.jarvis394.geekr.ui.newArticle.NewArticleScreenKey
 import com.jarvis394.geekr.ui.profile.ProfileScreenKey
 import com.jarvis394.geekr.ui.profile.ProfileViewModel
 import com.jarvis394.geekr.ui.profile.UserProfile
+import com.jarvis394.geekr.ui.personalArticles.PersonalArticlesScreenKey
 
 val dialogShape = RoundedCornerShape(28.dp)
 
@@ -108,6 +112,14 @@ fun UserProfileDialog(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val items = listOf(
+        ListItem(
+            label = "My articles",
+            icon = Icons.Rounded.List,
+            onClick = { navigator.navigateTo(PersonalArticlesScreenKey) }),
+        ListItem(
+            label = "New article",
+            icon = Icons.Rounded.Edit,
+            onClick = { navigator.navigateTo(NewArticleScreenKey()) }),
         ListItem(
             label = "Profile",
             icon = Icons.Rounded.Person,
